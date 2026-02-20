@@ -359,7 +359,7 @@ def payslip_view(request, payslip_id):
         else:
             messages.info(request, "No payslip found for the selected filter.")
 
-    periods, month_options, year_options = build_month_year_filters(
+    _, month_options, year_options = build_month_year_filters(
         accessible_qs.values_list('month_year', flat=True).distinct()
     )
 

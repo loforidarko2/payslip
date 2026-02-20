@@ -12,7 +12,7 @@ from .forms import CustomUserCreationForm, StaffIdPasswordResetForm
 from staff.models import Employee
 from payroll.models import Payslip
 from .decorators import admin_required, hr_admin_required, finance_required
-from payslip.date_utils import MONTH_YEAR_FORMAT, parse_month_year, build_month_year_filters
+from payslip.date_utils import build_month_year_filters
 
 USER_LIST_URL_NAME = 'accounts:user_list'
 
@@ -160,7 +160,7 @@ def hr_admin_dashboard(request):
             Q(month_year__icontains=search_query)
         )
 
-    available_periods, month_options, year_options = build_month_year_filters(
+    _, month_options, year_options = build_month_year_filters(
         Payslip.objects.filter(approval_status='approved').values_list('month_year', flat=True).distinct()
     )
     employee_options = Employee.objects.filter(
@@ -199,7 +199,7 @@ def finance_dashboard(request):
     if selected_year:
         recent_generated_qs = recent_generated_qs.filter(month_year__endswith=selected_year)
 
-    sorted_periods, month_options, year_options = build_month_year_filters(
+    _, month_options, year_options = build_month_year_filters(
         Payslip.objects.values_list('month_year', flat=True).distinct()
     )
     employee_options = Employee.objects.filter(payslips__isnull=False).distinct().order_by('name')
@@ -245,7 +245,7 @@ def staff_dashboard(request):
             employee = Employee.objects.get(staff_id=request.user.staff_id)
             payslips_qs = Payslip.objects.filter(employee=employee, approval_status='approved')
 
-            available_periods, month_options, year_options = build_month_year_filters(
+            _, month_options, year_options = build_month_year_filters(
                 payslips_qs.values_list('month_year', flat=True).distinct()
             )
 

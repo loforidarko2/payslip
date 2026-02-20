@@ -235,7 +235,7 @@ def import_employees(request):
                 
                 return redirect(EMPLOYEE_LIST_URL_NAME)
                 
-            except (ValueError, OSError, KeyError, pd.errors.ParserError) as e:
+            except (ValueError, OSError, KeyError) as e:
                 messages.error(request, f'Error reading file: {str(e)}')
     else:
         form = ImportEmployeeForm()
