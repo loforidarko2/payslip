@@ -38,7 +38,7 @@ class Command(BaseCommand):
             df_hrmis = df_hrmis[df_hrmis['NAME'].notna()]
             df_hrmis = df_hrmis[df_hrmis['NAME'].astype(str).str.upper() != 'NAME']
             self.stdout.write(f"Found {len(df_hrmis)} records in HRMIS.")
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             self.stdout.write(self.style.ERROR(f"Error reading {hrmis_file}: {e}"))
             return
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             df_comp_filtered = df_comp_filtered[df_comp_filtered['NAME'].astype(str).str.upper() != 'NAME']
             self.stdout.write(f"Found {len(df_comp_filtered)} records in Computation.")
             df_comp = df_comp_filtered
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             self.stdout.write(self.style.ERROR(f"Error reading {comp_file}: {e}"))
             return
 
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         def clean_name(name):
             if pd.isna(name): return ""
             s = str(name).strip().upper()
-            s = s.replace('.', '').replace(',', '')
+            s = s.translate(str.maketrans('', '', '.,'))
             return " ".join(s.split())
 
         df_hrmis['clean_name'] = df_hrmis['NAME'].apply(clean_name)
@@ -118,7 +118,7 @@ class Command(BaseCommand):
                     )
 
                     success_count += 1
-                except Exception as e:
+                except (ValueError, TypeError, KeyError) as e:
                     self.stdout.write(self.style.ERROR(f"Error processing {row.get('NAME')}: {e}"))
                     error_count += 1
 

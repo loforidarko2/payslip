@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import FileResponse
 from django.conf import settings
+from django.db import DatabaseError
 from django.core.paginator import Paginator
 from django.views.decorators.clickjacking import xframe_options_sameorigin
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 from datetime import datetime, date
 from django.utils import timezone
 import os
@@ -15,6 +16,8 @@ from .utils import calculate_ssnit, calculate_tier2, calculate_income_tax, gener
 
 from staff.models import Employee
 from accounts.decorators import admin_required, finance_required, staff_or_admin_required
+
+MONTH_YEAR_FORMAT = '%b-%Y'
 
 
 def _resolved_snapshot(payslip):
@@ -99,7 +102,7 @@ def payslip_generate(request):
                 
                 messages.success(request, f'Payslip generated successfully for {employee.name}')
                 return redirect(settings.LOGIN_REDIRECT_URL)
-            except Exception as e:
+            except (ValueError, TypeError, DecimalException, DatabaseError) as e:
                 messages.error(request, f'Error generating payslip: {str(e)}')
     else:
         form = PayslipGenerateForm()
@@ -215,7 +218,7 @@ def payslip_approve_list(request):
 
     def parse_month_year(value):
         try:
-            return datetime.strptime(value, '%b-%Y')
+            return datetime.strptime(value, MONTH_YEAR_FORMAT)
         except (TypeError, ValueError):
             return None
 
@@ -377,7 +380,7 @@ def payslip_view(request, payslip_id):
 
     def parse_month_year(value):
         try:
-            return datetime.strptime(value, '%b-%Y')
+            return datetime.strptime(value, MONTH_YEAR_FORMAT)
         except (TypeError, ValueError):
             return None
 
@@ -441,7 +444,7 @@ def payslip_preview_pdf(request, payslip_id):
         response = FileResponse(open(filepath, 'rb'), content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="{filename}"'
         return response
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         messages.error(request, f'Error generating PDF: {str(e)}')
         return redirect('payroll:payslip_view', payslip_id=payslip_id)
 
@@ -459,7 +462,7 @@ def payslip_download_pdf(request, payslip_id):
     try:
         filepath, filename = generate_payslip_pdf(payslip)
         return FileResponse(open(filepath, 'rb'), as_attachment=True, filename=filename)
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         messages.error(request, f'Error: {str(e)}')
         return redirect('payroll:payslip_view', payslip_id=payslip_id)
 

@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.db import IntegrityError
 from staff.models import Employee
 
 User = get_user_model()
@@ -40,7 +41,7 @@ class Command(BaseCommand):
                 )
                 created_count += 1
                 self.stdout.write(self.style.SUCCESS(f"Created user for {emp.staff_id} ({emp.name})"))
-            except Exception as e:
+            except (ValueError, TypeError, IntegrityError) as e:
                 self.stdout.write(self.style.ERROR(f"Failed to create user for {emp.staff_id}: {str(e)}"))
 
         self.stdout.write(self.style.SUCCESS(f"\nCompleted! Created: {created_count}, Skipped: {skipped_count}"))

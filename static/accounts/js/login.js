@@ -12,3 +12,8 @@ function togglePassword() {
         toggleIcon.classList.add("bi-eye");
     }
 }
+
+const passwordToggleBtn = document.getElementById("passwordToggleBtn");
+if (passwordToggleBtn) {
+    passwordToggleBtn.addEventListener("click", togglePassword);
+}

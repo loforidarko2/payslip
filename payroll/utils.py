@@ -14,6 +14,8 @@ import os
 from django.conf import settings
 from .models import SystemConfiguration
 
+MONTH_YEAR_FORMAT = '%b-%Y'
+
 
 def calculate_ssnit(gross_salary, rate=None):
     """Calculate SSNIT contribution (uses database default if rate not provided)"""
@@ -121,10 +123,10 @@ def generate_payslip_pdf(payslip):
     
     # Parse month_year for period display
     try:
-        month_dt = datetime.strptime(payslip.month_year, '%b-%Y')
+        month_dt = datetime.strptime(payslip.month_year, MONTH_YEAR_FORMAT)
         last_day = calendar.monthrange(month_dt.year, month_dt.month)[1]
-        period_display = f"01-{month_dt.strftime('%b-%Y').upper()} TO {last_day}-{month_dt.strftime('%b-%Y').upper()}"
-    except:
+        period_display = f"01-{month_dt.strftime(MONTH_YEAR_FORMAT).upper()} TO {last_day}-{month_dt.strftime(MONTH_YEAR_FORMAT).upper()}"
+    except (TypeError, ValueError):
         period_display = payslip.month_year
     
     # Add logo with fallback to static default logo
@@ -142,7 +144,7 @@ def generate_payslip_pdf(payslip):
             logo.hAlign = 'CENTER'
             elements.append(logo)
             elements.append(Spacer(1, 0.03*inch))
-        except Exception:
+        except (OSError, ValueError, TypeError):
             pass  # If logo fails to load, continue without it
     
     # Header
@@ -279,8 +281,7 @@ def generate_payslip_pdf(payslip):
         ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
         ('LEFTPADDING', (0, 0), (-1, -1), 6),
         # Gross salary row - gray background
-        ('BACKGROUND', (0, 3 if payslip.allowances > 0 else 3), 
-         (-1, 3 if payslip.allowances > 0 else 3), colors.HexColor('#f0f0f0')),
+        ('BACKGROUND', (0, 3), (-1, 3), colors.HexColor('#f0f0f0')),
         # Total deductions row - gray background
         ('BACKGROUND', (0, -2), (-1, -2), colors.HexColor('#f0f0f0')),
         # Net salary row - darker gray 
@@ -290,7 +291,7 @@ def generate_payslip_pdf(payslip):
     ]))
     
     #  Need to add DEDUCTIONS header styling dynamically
-    deductions_row = 4 if payslip.allowances > 0 else 4
+    deductions_row = 4
     financial_table.setStyle(TableStyle([
         ('SPAN', (0, deductions_row), (1, deductions_row)),
         ('ALIGN', (0, deductions_row), (0, deductions_row), 'CENTER'),

@@ -4,6 +4,9 @@ from django.conf import settings
 from accounts.models import CustomUser
 from staff.models import Employee
 
+HR_DEPARTMENT = 'HR DPT.'
+
+
 class Command(BaseCommand):
     help = 'Import specific HR-Admin users from provided list'
 
@@ -13,13 +16,13 @@ class Command(BaseCommand):
             raise CommandError("DEFAULT_USER_PASSWORD is not set. Add it to your environment or .env file.")
 
         admins_data = [
-            {'staff_id': '1287339', 'role': 'hr_admin', 'contact': '262718659', 'email': 'anumasiedu@gmail.com', 'name': 'Anum Asiedu', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'MALE'},
-            {'staff_id': '839016', 'role': 'hr_admin', 'contact': '242604184', 'email': '', 'name': 'Wilson Laudina', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
-            {'staff_id': '926143', 'role': 'hr_admin', 'contact': '206150426', 'email': '', 'name': 'Gasu Helen', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
-            {'staff_id': '926175', 'role': 'hr_admin', 'contact': '242129812', 'email': 'ama.frimpong@nas.gov.gh', 'name': 'Frimpong Ama', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
-            {'staff_id': '926553', 'role': 'hr_admin', 'contact': '274354017', 'email': 'Sethokai37@gmail.com', 'name': 'Asare Seth', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'MALE'},
-            {'staff_id': '934620', 'role': 'hr_admin', 'contact': '242785662', 'email': 'Fred.atsu@nas.gov.gh', 'name': 'Amedi Frederick', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'MALE'},
-            {'staff_id': '934621', 'role': 'hr_admin', 'contact': '575122013', 'email': '', 'name': 'Kwasitsu Felix', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'MALE'},
+            {'staff_id': '1287339', 'role': 'hr_admin', 'contact': '262718659', 'email': 'anumasiedu@gmail.com', 'name': 'Anum Asiedu', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'MALE'},
+            {'staff_id': '839016', 'role': 'hr_admin', 'contact': '242604184', 'email': '', 'name': 'Wilson Laudina', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
+            {'staff_id': '926143', 'role': 'hr_admin', 'contact': '206150426', 'email': '', 'name': 'Gasu Helen', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
+            {'staff_id': '926175', 'role': 'hr_admin', 'contact': '242129812', 'email': 'ama.frimpong@nas.gov.gh', 'name': 'Frimpong Ama', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
+            {'staff_id': '926553', 'role': 'hr_admin', 'contact': '274354017', 'email': 'Sethokai37@gmail.com', 'name': 'Asare Seth', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'MALE'},
+            {'staff_id': '934620', 'role': 'hr_admin', 'contact': '242785662', 'email': 'Fred.atsu@nas.gov.gh', 'name': 'Amedi Frederick', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'MALE'},
+            {'staff_id': '934621', 'role': 'hr_admin', 'contact': '575122013', 'email': '', 'name': 'Kwasitsu Felix', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'MALE'},
             {'staff_id': 'hr', 'role': 'hr_admin', 'contact': '', 'email': 'edboatend@gmail.com', 'name': 'HR Admin hr', 'dept': 'ADMIN DPT.', 'station': 'HEADQUARTERS', 'gender': ''},
             {'staff_id': 'qa', 'role': 'hr_admin', 'contact': '', 'email': '', 'name': 'qa qa', 'dept': 'GAR DISPATCH CENTRE', 'station': 'GREATER ACCRA', 'gender': ''},
         ]

@@ -35,7 +35,7 @@ class Command(BaseCommand):
             if users_updated > 0:
                 CustomUser.objects.bulk_update(CustomUser.objects.all(), ['legacy_role'])
                 self.stdout.write(self.style.SUCCESS(f'Saved {users_updated} user roles'))
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             self.stdout.write(self.style.WARNING(f'Could not save user roles: {e}'))
         
         # Save employee status to legacy_status
@@ -53,7 +53,7 @@ class Command(BaseCommand):
             if employees_updated > 0:
                 Employee.objects.bulk_update(Employee.objects.all(), ['legacy_status'])
                 self.stdout.write(self.style.SUCCESS(f'Saved {employees_updated} employee statuses'))
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             self.stdout.write(self.style.WARNING(f'Could not save employee statuses: {e}'))
         
         # Save payslip approval statuses
@@ -71,7 +71,7 @@ class Command(BaseCommand):
             if payslips_updated > 0:
                 Payslip.objects.bulk_update(Payslip.objects.all(), ['legacy_approval_status'])
                 self.stdout.write(self.style.SUCCESS(f'Saved {payslips_updated} payslip statuses'))
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             self.stdout.write(self.style.WARNING(f'Could not save payslip statuses: {e}'))
         
         self.stdout.write(self.style.SUCCESS('\nLegacy data saved successfully!'))

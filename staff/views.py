@@ -15,6 +15,9 @@ from accounts.forms import CustomUserCreationForm # For User Management View but
 # Actually User Management is admin stuff, might fit in accounts too. 
 # But Employee Management fits here.
 
+EMPLOYEE_LIST_URL_NAME = 'staff:employee_list'
+
+
 @employee_record_access_required
 def employee_list(request):
     """List all employees with search functionality"""
@@ -49,7 +52,7 @@ def employee_create(request):
         if form.is_valid():
             employee = form.save()
             messages.success(request, f'Employee {employee.name} added successfully!')
-            return redirect('staff:employee_list')
+            return redirect(EMPLOYEE_LIST_URL_NAME)
     else:
         form = EmployeeForm()
     
@@ -70,7 +73,7 @@ def employee_edit(request, staff_id):
         if form.is_valid():
             employee = form.save()
             messages.success(request, f'Employee {employee.name} updated successfully!')
-            return redirect('staff:employee_list')
+            return redirect(EMPLOYEE_LIST_URL_NAME)
     else:
         form = EmployeeForm(instance=employee)
     
@@ -100,7 +103,7 @@ def employee_delete(request, staff_id):
         employee.separated_by = request.user
         employee.save(update_fields=['is_active', 'separation_reason', 'separated_at', 'separated_by', 'updated_at'])
         messages.success(request, f'Employee {employee.name} separated successfully.')
-        return redirect('staff:employee_list')
+        return redirect(EMPLOYEE_LIST_URL_NAME)
     
     return render(request, 'staff/employee_confirm_delete.html', {'employee': employee})
 
@@ -221,7 +224,7 @@ def import_employees(request):
                                 user_obj.save()
                         
                         success_count += 1
-                    except Exception as e:
+                    except (ValueError, TypeError, KeyError) as e:
                         print(f"Error importing row: {e}")
                         error_count += 1
                 
@@ -230,9 +233,9 @@ def import_employees(request):
                 # Clean up file
                 fs.delete(filename)
                 
-                return redirect('staff:employee_list')
+                return redirect(EMPLOYEE_LIST_URL_NAME)
                 
-            except Exception as e:
+            except (ValueError, OSError, KeyError, pd.errors.ParserError) as e:
                 messages.error(request, f'Error reading file: {str(e)}')
     else:
         form = ImportEmployeeForm()

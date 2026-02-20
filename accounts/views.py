@@ -13,6 +13,10 @@ from staff.models import Employee
 from payroll.models import Payslip
 from .decorators import admin_required, hr_admin_required, finance_required
 
+MONTH_YEAR_FORMAT = '%b-%Y'
+USER_LIST_URL_NAME = 'accounts:user_list'
+
+
 def login_view(request):
     """Custom login view"""
     if request.user.is_authenticated:
@@ -158,7 +162,7 @@ def hr_admin_dashboard(request):
 
     def parse_month_year(value):
         try:
-            return datetime.strptime(value, '%b-%Y')
+            return datetime.strptime(value, MONTH_YEAR_FORMAT)
         except (TypeError, ValueError):
             return None
 
@@ -215,7 +219,7 @@ def finance_dashboard(request):
 
     def parse_month_year(value):
         try:
-            return datetime.strptime(value, '%b-%Y')
+            return datetime.strptime(value, MONTH_YEAR_FORMAT)
         except (TypeError, ValueError):
             return None
 
@@ -272,7 +276,7 @@ def staff_dashboard(request):
 
     def parse_month_year(value):
         try:
-            return datetime.strptime(value, '%b-%Y')
+            return datetime.strptime(value, MONTH_YEAR_FORMAT)
         except (TypeError, ValueError):
             return None
 
@@ -360,7 +364,7 @@ def user_create(request):
         if form.is_valid():
             user = form.save()
             messages.success(request, f'User {user.username} created successfully!')
-            return redirect('accounts:user_list')
+            return redirect(USER_LIST_URL_NAME)
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/user_form.html', {'form': form, 'action': 'Create'})
@@ -384,7 +388,7 @@ def user_edit(request, user_id):
         # ... other fields
         user_obj.save()
         messages.success(request, f'User {user_obj.username} updated.')
-        return redirect('accounts:user_list')
+        return redirect(USER_LIST_URL_NAME)
 
     return render(request, 'accounts/user_edit.html', {'user_obj': user_obj})
 
@@ -396,5 +400,5 @@ def user_delete(request, user_id):
         username = user_obj.username
         user_obj.delete()
         messages.success(request, f'User {username} deleted.')
-        return redirect('accounts:user_list')
+        return redirect(USER_LIST_URL_NAME)
     return render(request, 'accounts/user_confirm_delete.html', {'user_obj': user_obj})

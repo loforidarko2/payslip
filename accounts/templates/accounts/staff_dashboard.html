@@ -47,8 +47,8 @@
             <div class="card-body">
                 <form method="get" class="row g-2 mb-3">
                     <div class="col-md-4">
-                        <label class="form-label mb-1">Month</label>
-                        <select class="form-select" name="month">
+                        <label class="form-label mb-1" for="staffMonth">Month</label>
+                        <select class="form-select" id="staffMonth" name="month">
                             <option value="">All months</option>
                             {% for month in month_options %}
                             <option value="{{ month }}" {% if selected_month == month %}selected{% endif %}>{{ month }}</option>
@@ -56,8 +56,8 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label mb-1">Year</label>
-                        <select class="form-select" name="year">
+                        <label class="form-label mb-1" for="staffYear">Year</label>
+                        <select class="form-select" id="staffYear" name="year">
                             <option value="">All years</option>
                             {% for year in year_options %}
                             <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>

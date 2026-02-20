@@ -46,7 +46,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Month/Year *</label>
+                            <label class="form-label" for="{{ form.month_year.id_for_label }}">Month/Year *</label>
                             {{ form.month_year }}
                             <div class="form-text">Select the payroll month and year.</div>
                             {% if form.month_year.errors %}
@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">District *</label>
+                            <label class="form-label" for="{{ form.district.id_for_label }}">District *</label>
                             {{ form.district }}
                             {% if form.district.errors %}
                             <div class="text-danger small">{{ form.district.errors }}</div>
@@ -65,11 +65,11 @@
 
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">SSNIT Rate (%)</label>
+                            <label class="form-label" for="{{ form.ssnit_rate.id_for_label }}">SSNIT Rate (%)</label>
                             {{ form.ssnit_rate }}
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Tier 2 Rate (%)</label>
+                            <label class="form-label" for="{{ form.tier2_rate.id_for_label }}">Tier 2 Rate (%)</label>
                             {{ form.tier2_rate }}
                         </div>
                     </div>

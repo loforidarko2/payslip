@@ -2,6 +2,9 @@ from django.db import models
 from django.conf import settings
 from staff.models import Employee
 
+MONTH_YEAR_FORMAT = '%b-%Y'
+SYSTEM_CONFIGURATION_LABEL = "System Configuration"
+
 
 class Payslip(models.Model):
     """Payslip model with approval workflow"""
@@ -111,10 +114,10 @@ class Payslip(models.Model):
         from datetime import datetime
         import calendar
         try:
-            month_dt = datetime.strptime(self.month_year, '%b-%Y')
+            month_dt = datetime.strptime(self.month_year, MONTH_YEAR_FORMAT)
             last_day = calendar.monthrange(month_dt.year, month_dt.month)[1]
-            return f"01-{month_dt.strftime('%b-%Y').upper()} TO {last_day}-{month_dt.strftime('%b-%Y').upper()}"
-        except:
+            return f"01-{month_dt.strftime(MONTH_YEAR_FORMAT).upper()} TO {last_day}-{month_dt.strftime(MONTH_YEAR_FORMAT).upper()}"
+        except (TypeError, ValueError):
             return self.month_year
 
 
@@ -238,11 +241,11 @@ class SystemConfiguration(models.Model):
     email = models.EmailField(blank=True)
 
     class Meta:
-        verbose_name = "System Configuration"
-        verbose_name_plural = "System Configuration"
+        verbose_name = SYSTEM_CONFIGURATION_LABEL
+        verbose_name_plural = SYSTEM_CONFIGURATION_LABEL
 
     def __str__(self):
-        return "System Configuration"
+        return SYSTEM_CONFIGURATION_LABEL
 
     @classmethod
     def get_settings(cls):

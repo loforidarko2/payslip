@@ -36,7 +36,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label class="form-label">Select Employee *</label>
+                            <label class="form-label" for="{{ form.employee.id_for_label }}">Select Employee *</label>
                             {{ form.employee }}
                             <small class="form-text text-muted">{{ form.employee.help_text }}</small>
                             <div class="text-danger">{{ form.employee.errors }}</div>
@@ -45,12 +45,12 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Month/Year *</label>
+                            <label class="form-label" for="{{ form.month_year.id_for_label }}">Month/Year *</label>
                             {{ form.month_year }}
                             <div class="text-danger">{{ form.month_year.errors }}</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">District *</label>
+                            <label class="form-label" for="{{ form.district.id_for_label }}">District *</label>
                             {{ form.district }}
                         </div>
                     </div>
@@ -58,21 +58,21 @@
                     <h5 class="card-title text-primary border-bottom pb-2 mb-3 mt-4">Employee Snapshot</h5>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label class="form-label">Department</label>
+                            <label class="form-label" for="{{ form.department.id_for_label }}">Department</label>
                             {{ form.department }}
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Unit</label>
+                            <label class="form-label" for="{{ form.unit.id_for_label }}">Unit</label>
                             {{ form.unit }}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Grade</label>
+                            <label class="form-label" for="{{ form.grade.id_for_label }}">Grade</label>
                             {{ form.grade }}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Level</label>
+                            <label class="form-label" for="{{ form.level.id_for_label }}">Level</label>
                             {{ form.level }}
                         </div>
                     </div>
@@ -80,18 +80,18 @@
                     <h5 class="card-title text-primary border-bottom pb-2 mb-3 mt-4">Financials</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Basic Salary *</label>
+                            <label class="form-label" for="{{ form.basic_salary.id_for_label }}">Basic Salary *</label>
                             <div class="input-group">
                                 <span class="input-group-text">GHS</span>
                                 {{ form.basic_salary }}
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">SSNIT Rate (%)</label>
+                            <label class="form-label" for="{{ form.ssnit_rate.id_for_label }}">SSNIT Rate (%)</label>
                             {{ form.ssnit_rate }}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Tier 2 Rate (%)</label>
+                            <label class="form-label" for="{{ form.tier2_rate.id_for_label }}">Tier 2 Rate (%)</label>
                             {{ form.tier2_rate }}
                         </div>
                     </div>

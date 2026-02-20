@@ -90,10 +90,10 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown">
+                        <button class="nav-link dropdown-toggle btn btn-link" id="navbarDropdown" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
-                        </a>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <a class="dropdown-item" href="{% url 'accounts:profile' %}">

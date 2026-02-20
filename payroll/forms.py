@@ -5,6 +5,8 @@ from .models import Payslip, SystemConfiguration
 from staff.models import Employee
 from accounts.models import CustomUser
 
+MONTH_YEAR_FORMAT = '%b-%Y'
+
 
 def build_month_year_choices(months_back=24, months_forward=12):
     """Build month-year choices in Mon-YYYY format."""
@@ -17,7 +19,7 @@ def build_month_year_choices(months_back=24, months_forward=12):
     for month_index in range(end_index, start_index - 1, -1):
         year = month_index // 12
         month = (month_index % 12) + 1
-        value = date(year, month, 1).strftime('%b-%Y')
+        value = date(year, month, 1).strftime(MONTH_YEAR_FORMAT)
         choices.append((value, value))
     return choices
 
@@ -91,7 +93,7 @@ class PayslipGenerateForm(forms.Form):
         config = SystemConfiguration.get_settings()
         month_year_choices = build_month_year_choices()
         self.fields['month_year'].choices = month_year_choices
-        self.fields['month_year'].initial = date.today().strftime('%b-%Y')
+        self.fields['month_year'].initial = date.today().strftime(MONTH_YEAR_FORMAT)
         self.fields['district'].initial = config.default_district
         self.fields['ssnit_rate'].initial = config.ssnit_rate
         self.fields['tier2_rate'].initial = config.tier2_rate
@@ -124,7 +126,7 @@ class BulkPayslipGenerateForm(forms.Form):
         config = SystemConfiguration.get_settings()
         month_year_choices = build_month_year_choices()
         self.fields['month_year'].choices = month_year_choices
-        self.fields['month_year'].initial = date.today().strftime('%b-%Y')
+        self.fields['month_year'].initial = date.today().strftime(MONTH_YEAR_FORMAT)
         self.fields['district'].initial = config.default_district
         self.fields['ssnit_rate'].initial = config.ssnit_rate
         self.fields['tier2_rate'].initial = config.tier2_rate
