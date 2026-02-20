@@ -1,0 +1,139 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Employees - NAS Payslip System{% endblock %}
+{% block extra_css %}
+<style>
+    .clickable-row {
+        cursor: pointer;
+    }
+    .clickable-row:hover {
+        background-color: #f8fbff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-people"></i> Employee Management</h2>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search by name, ID or department..."
+                value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        {% if can_add_employee %}
+        <a href="{% url 'staff:employee_create' %}" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Add New Employee
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list"></i> All Employees
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Staff ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                            <th>Department</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr
+                        {% if can_edit_employee %}
+                        class="clickable-row"
+                        data-href="{% url 'staff:employee_edit' employee.staff_id %}"
+                        role="link"
+                        tabindex="0"
+                        {% endif %}
+                    >
+                        <td>{{ employee.staff_id }}</td>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.get_status_display }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>GHS {{ employee.monthly_salary }}</td>
+                        <td>
+                            {% if employee.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">No employees found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if employees.paginator.num_pages > 1 %}
+        <nav class="mt-3" aria-label="Employee pagination">
+            <ul class="pagination justify-content-center mb-0">
+                {% if employees.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?search={{ search_query }}&page={{ employees.previous_page_number }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">Page {{ employees.number }} of {{ employees.paginator.num_pages }}</span>
+                </li>
+
+                {% if employees.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?search={{ search_query }}&page={{ employees.next_page_number }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach((row) => {
+            const go = () => {
+                const href = row.getAttribute('data-href');
+                if (href) window.location.href = href;
+            };
+            row.addEventListener('click', (e) => {
+                if (e.target.closest('a,button,input,select,textarea,form,label')) return;
+                go();
+            });
+            row.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.target.closest('a,button,input,select,textarea,form,label')) return;
+                    e.preventDefault();
+                    go();
+                }
+            });
+        });
+    })();
+</script>
+{% endblock %}

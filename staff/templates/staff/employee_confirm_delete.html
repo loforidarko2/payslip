@@ -1,0 +1,32 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Separate Employee - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-person-dash"></i> Confirm Separation
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to separate/remove the employee <strong>{{ employee.name }}</strong> (Staff ID: {{
+                    employee.staff_id }})?</p>
+                <p class="text-danger small"><strong>Note:</strong> The employee will be marked inactive and excluded from active workflows.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="separation_reason" class="form-label">Reason for removal *</label>
+                        <textarea class="form-control" id="separation_reason" name="separation_reason" rows="4" required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'staff:employee_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Confirm Separation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

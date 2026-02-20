@@ -1,0 +1,130 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Edit Payslip - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-pencil-square"></i> Edit Payslip</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                Edit Payslip #{{ payslip.id }} - {{ payslip.employee.name }}
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-4">
+                    <i class="bi bi-exclamation-triangle"></i> You are editing a pending payslip. Changes to financial
+                    values will be saved as-is.
+                </div>
+
+                <form method="post" id="payslipEditForm">
+                    {% csrf_token %}
+
+                    <h5 class="border-bottom pb-2 mb-3">Snapshot Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department</label>
+                            <input type="text" name="department" class="form-control" value="{{ snapshot.department }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" name="unit" class="form-control" value="{{ snapshot.unit }}">
+                        </div>
+                    </div>
+
+                    <h5 class="border-bottom pb-2 mb-3">Earnings & Deductions</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Basic Salary (GHS)</label>
+                            <input type="number" step="0.01" name="basic_salary" class="form-control"
+                                value="{{ payslip.basic_salary }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Allowances (GHS)</label>
+                            <input type="number" step="0.01" name="allowances" class="form-control"
+                                value="{{ payslip.allowances }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">SSNIT (GHS)</label>
+                            <input type="number" step="0.01" name="ssnit_deduction" class="form-control"
+                                value="{{ payslip.ssnit_deduction }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Tier 2 (GHS)</label>
+                            <input type="number" step="0.01" name="tier2_deduction" class="form-control"
+                                value="{{ payslip.tier2_deduction }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Income Tax (GHS)</label>
+                            <input type="number" step="0.01" name="income_tax" class="form-control"
+                                value="{{ payslip.income_tax }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Other Deductions (GHS)</label>
+                            <input type="number" step="0.01" name="other_deductions" class="form-control"
+                                value="{{ payslip.other_deductions }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Reason for changes</label>
+                        <select name="edit_reason_choice" class="form-select" required>
+                            <option value="">Select a reason</option>
+                            <option value="User-specific mistake">User-specific mistake</option>
+                            <option value="Month-wide mistake">Month-wide mistake</option>
+                            <option value="Incorrect deductions">Incorrect deductions</option>
+                            <option value="Incorrect allowances">Incorrect allowances</option>
+                            <option value="Incorrect basic salary">Incorrect basic salary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="edit_reason_details" class="form-control mt-2"
+                            placeholder="Optional details (e.g., staff ID, month/year, error description)">
+                        <div class="form-text">This will be logged in the audit trail.</div>
+                    </div>
+
+                    <div class="row g-2 mt-4">
+                        <div class="col-md-6 d-grid">
+                        <a href="{% url 'payroll:payslip_view' payslip.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        </div>
+                        <div class="col-md-6 d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const form = document.getElementById('payslipEditForm');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+            const reasonSelect = form.querySelector('select[name="edit_reason_choice"]');
+            if (!reasonSelect || !reasonSelect.value) {
+                e.preventDefault();
+                alert('Please select a reason for the changes.');
+                return;
+            }
+            const ok = confirm('Save changes to this payslip? If it was approved, it will be reopened as pending.');
+            if (!ok) {
+                e.preventDefault();
+            }
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Admin Dashboard - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Admin Dashboard</h2>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <h3>{{ total_users }}</h3>
+            <p>System Users</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="background: linear-gradient(135deg, #27ae60 0%, #16a085 100%);">
+            <h3>{{ active_employees }}</h3>
+            <p>Active Employees</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);">
+            <h3>{{ total_payslips }}</h3>
+            <p>Total Records</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning-fill"></i> Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="{% url 'staff:employee_create' %}" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-person-plus"></i> Add Employee
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'staff:import_employees' %}" class="btn btn-info w-100 mb-2">
+                            <i class="bi bi-upload"></i> Import Employees
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'payroll:system_settings' %}" class="btn btn-dark w-100 mb-2">
+                            <i class="bi bi-gear"></i> System Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

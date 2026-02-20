@@ -1,0 +1,151 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Staff Dashboard - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-speedometer2"></i> My Dashboard</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-person-badge me-2"></i> Employee Information
+            </div>
+            <div class="card-body">
+                {% if employee %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ employee.name }}</p>
+                        <p><strong>Staff ID:</strong> {{ employee.staff_id }}</p>
+                        <p><strong>Department:</strong> {{ employee.department }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Rank/Position:</strong> {{ employee.get_position_name }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-warning mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> No employee record linked to this account. Please
+                    contact HR.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-text me-2"></i> My Payslips</span>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label mb-1">Month</label>
+                        <select class="form-select" name="month">
+                            <option value="">All months</option>
+                            {% for month in month_options %}
+                            <option value="{{ month }}" {% if selected_month == month %}selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-1">Year</label>
+                        <select class="form-select" name="year">
+                            <option value="">All years</option>
+                            {% for year in year_options %}
+                            <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
+                {% if payslips %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Period</th>
+                                <th>Net Salary</th>
+                                <th>Generated At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payslip in payslips %}
+                            <tr>
+                                <td><strong>{{ payslip.month_year }}</strong></td>
+                                <td>GHS {{ payslip.net_salary }}</td>
+                                <td>{{ payslip.generated_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if selected_payslip %}
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-pdf me-2"></i>Payslip Details</h5>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'payroll:payslip_preview_pdf' selected_payslip.id %}" class="btn btn-sm btn-primary" target="_blank">
+                                <i class="bi bi-printer"></i> Print
+                            </a>
+                            <a href="{% url 'payroll:payslip_download_pdf' selected_payslip.id %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-file-pdf"></i> Download PDF
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body p-0" style="height: 70vh;">
+                            <iframe
+                                src="{% url 'payroll:payslip_preview_pdf' selected_payslip.id %}"
+                                title="Payslip PDF Preview"
+                                style="width: 100%; height: 100%; border: 0;"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if payslips.paginator.num_pages > 1 %}
+                <nav class="mt-3" aria-label="Payslip pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if payslips.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?month={{ selected_month }}&year={{ selected_year }}&page={{ payslips.previous_page_number }}">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                        {% endif %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link">Page {{ payslips.number }} of {{ payslips.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if payslips.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?month={{ selected_month }}&year={{ selected_year }}&page={{ payslips.next_page_number }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <p class="text-muted text-center py-4 mb-0">No approved payslips found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Bulk Generate Payslips - National Ambulance Service{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2 class="mb-4"><i class="bi bi-collection-play"></i> Bulk Generate Payslips</h2>
+        <div class="btn-group mb-4" role="group" aria-label="Generate mode">
+            <a href="{% url 'payroll:payslip_generate' %}" class="btn btn-outline-primary">
+                <i class="bi bi-person-plus me-2"></i> Individual
+            </a>
+            <a href="{% url 'payroll:payslip_bulk_generate' %}" class="btn btn-primary">
+                <i class="bi bi-collection-play me-2"></i> Bulk Process
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-info-circle"></i> Batch Processing Information
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h3 class="display-6 text-primary">{{ active_count }}</h3>
+                    <p class="text-muted">Active Employees will be processed</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Important:</strong> This will generate pending payslips for ALL active employees who do not
+                    yet have a payslip for the selected month.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        Please correct the errors below.
+                    </div>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Month/Year *</label>
+                            {{ form.month_year }}
+                            <div class="form-text">Select the payroll month and year.</div>
+                            {% if form.month_year.errors %}
+                            <div class="text-danger small">{{ form.month_year.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">District *</label>
+                            {{ form.district }}
+                            {% if form.district.errors %}
+                            <div class="text-danger small">{{ form.district.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">SSNIT Rate (%)</label>
+                            {{ form.ssnit_rate }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tier 2 Rate (%)</label>
+                            {{ form.tier2_rate }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-lightning-charge"></i> Generate All Payslips
+                        </button>
+                        <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

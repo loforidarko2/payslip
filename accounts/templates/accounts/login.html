@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - National Ambulance Service</title>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/font/bootstrap-icons.css' %}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'accounts/css/auth_shared.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="bi bi-hospital"></i>
+            </div>
+            <h4 class="mb-1">National Ambulance Service</h4>
+            <p class="mb-0 opacity-75">Ghana Payslip Portal</p>
+        </div>
+
+        <div class="login-body">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'accounts:login' %}">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="form-floating mb-3">
+                    <input type="text" name="username" class="form-control" id="username" placeholder="Staff ID"
+                        required autofocus>
+                    <label for="username"><i class="bi bi-person me-2"></i>Staff ID or Username</label>
+                </div>
+
+                <div class="form-floating mb-4 position-relative">
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Password"
+                        required>
+                    <label for="password"><i class="bi bi-shield-lock me-2"></i>Password</label>
+                    <span class="password-toggle" onclick="togglePassword()">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </span>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-login text-white">
+                        Sign In <i class="bi bi-box-arrow-in-right ms-2"></i>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <a href="{% url 'accounts:forgot_password' %}" class="text-decoration-none small text-muted">
+                        Forgot password?
+                    </a>
+                </div>
+            </form>
+
+            <div class="footer-logo">
+                <small>&copy; 2026 National Ambulance Service<br>Secure Access Portal</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'accounts/js/login.js' %}"></script>
+</body>
+
+</html>

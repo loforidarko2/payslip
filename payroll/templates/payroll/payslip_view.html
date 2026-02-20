@@ -1,0 +1,203 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Payslip Details - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="bi bi-file-earmark-spreadsheet"></i> Payslip Details</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'payroll:payslip_preview_pdf' payslip.id %}" class="btn btn-primary" target="_blank">
+            <i class="bi bi-printer"></i> Print
+        </a>
+        <a href="{% url 'payroll:payslip_download_pdf' payslip.id %}" class="btn btn-danger ms-2">
+            <i class="bi bi-file-pdf"></i> Download PDF
+        </a>
+        <a href="javascript:history.back()" class="btn btn-secondary ms-2">Back</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="bi bi-funnel"></i> Quick Filter
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <input type="hidden" name="apply_filter" value="1">
+            <div class="col-md-5">
+                <label class="form-label mb-1">Employee</label>
+                <select class="form-select" name="employee">
+                    <option value="">All employees</option>
+                    {% for item in employee_options %}
+                    <option value="{{ item.employee__staff_id }}" {% if selected_employee == item.employee__staff_id %}selected{% endif %}>
+                        {{ item.employee__name }} ({{ item.employee__staff_id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-1">Month</label>
+                <select class="form-select" name="month">
+                    <option value="">All months</option>
+                    {% for month in month_options %}
+                    <option value="{{ month }}" {% if selected_month == month %}selected{% endif %}>{{ month }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-1">Year</label>
+                <select class="form-select" name="year">
+                    <option value="">All years</option>
+                    {% for year in year_options %}
+                    <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">Apply</button>
+                <a href="{% url 'payroll:payslip_view' payslip.id %}" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-pdf"></i> Payslip Preview</span>
+                <small class="text-muted">View, print, and download are all from this same PDF.</small>
+            </div>
+            <div class="card-body p-0" style="height: 78vh;">
+                <iframe
+                    src="{% url 'payroll:payslip_preview_pdf' payslip.id %}"
+                    title="Payslip PDF Preview"
+                    style="width: 100%; height: 100%; border: 0;"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-person-vcard"></i> Employee Snapshot
+            </div>
+            <div class="card-body">
+                <div class="mb-2"><strong>Department:</strong> {{ snapshot.department|default:"-" }}</div>
+                <div class="mb-2"><strong>Unit:</strong> {{ snapshot.unit|default:"-" }}</div>
+                <div class="mb-2"><strong>Grade:</strong> {{ snapshot.grade|default:"-" }}</div>
+                <div class="mb-2"><strong>Level:</strong> {{ snapshot.level|default:"-" }}</div>
+                <div><strong>SSNIT/Ghana Card #:</strong> {{ snapshot.staff_identifier|default:"-" }}</div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-gear"></i> Actions
+            </div>
+            <div class="card-body">
+                {% if payslip.approval_status == 'pending' %}
+                {% if user.is_finance %}
+                <a href="{% url 'payroll:payslip_edit' payslip.id %}" class="btn btn-warning w-100 mb-2">
+                    <i class="bi bi-pencil-square"></i> Edit Payslip
+                </a>
+                {% endif %}
+
+                {% if user.is_admin or user.is_finance %}
+                <a href="{% url 'payroll:payslip_approve' payslip.id %}" class="btn btn-success w-100 mb-2">
+                    <i class="bi bi-check-circle"></i> Approve This Payslip
+                </a>
+                <a href="{% url 'payroll:payslip_reject' payslip.id %}" class="btn btn-danger w-100 mb-2">
+                    <i class="bi bi-x-circle"></i> Reject This Payslip
+                </a>
+                {% endif %}
+                {% endif %}
+
+                {% if payslip.approval_status == 'approved' and user.is_finance %}
+                <a href="{% url 'payroll:payslip_edit' payslip.id %}" class="btn btn-warning w-100 mb-2">
+                    <i class="bi bi-pencil-square"></i> Edit Payslip (Reopens)
+                </a>
+                <form method="post" action="{% url 'payroll:payslip_revert_to_pending' payslip.id %}" class="js-revert-form">
+                    {% csrf_token %}
+                    <select name="reason_choice" class="form-select mb-2" required>
+                        <option value="">Select reason</option>
+                        <option value="User-specific mistake">User-specific mistake</option>
+                        <option value="Month-wide mistake">Month-wide mistake</option>
+                        <option value="Incorrect deductions">Incorrect deductions</option>
+                        <option value="Incorrect allowances">Incorrect allowances</option>
+                        <option value="Incorrect basic salary">Incorrect basic salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="text" name="reason_details" class="form-control mb-2"
+                        placeholder="Optional details (e.g., staff ID, month/year, error description)">
+                    <button type="submit" class="btn btn-outline-warning w-100 mb-2">
+                        <i class="bi bi-arrow-counterclockwise"></i> Revert to Pending
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if payslip.approval_status == 'rejected' %}
+                <a href="{% url 'payroll:payslip_delete' payslip.id %}" class="btn btn-danger w-100 mb-2">
+                    <i class="bi bi-trash"></i> Delete This Payslip
+                </a>
+                {% endif %}
+
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        {% if user.is_admin or user.is_finance or user.is_hr_admin %}
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Approval Info
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Status:</strong> {{ payslip.get_approval_status_display }}
+                </div>
+                <div class="mb-2">
+                    <strong>Approved By:</strong>
+                    {% if payslip.approved_by %}
+                        {{ payslip.approved_by.get_full_name|default:payslip.approved_by.username }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>Approved At:</strong>
+                    {{ payslip.approved_at|date:"d M Y, H:i"|default:"-" }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const forms = document.querySelectorAll('.js-revert-form');
+        forms.forEach((form) => {
+            form.addEventListener('submit', function (e) {
+                const reasonSelect = form.querySelector('select[name="reason_choice"]');
+                if (!reasonSelect || !reasonSelect.value) {
+                    e.preventDefault();
+                    alert('Please select a reason for the revert.');
+                    return;
+                }
+                const ok = confirm('Revert this payslip to pending? This will require re-approval.');
+                if (!ok) {
+                    e.preventDefault();
+                    return;
+                }
+            });
+        });
+    })();
+</script>
+{% endblock %}

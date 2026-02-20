@@ -1,0 +1,184 @@
+/* Excel-style simple layout for B&W printing */
+@media print {
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .navbar,
+    footer,
+    .no-print,
+    .content-wrapper > * {
+        display: none !important;
+    }
+
+    .payslip-container {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 4mm !important;
+        page-break-inside: avoid;
+    }
+
+    @page {
+        size: landscape;
+        margin: 4mm;
+    }
+
+    /* More compact for printing */
+    .payslip-container {
+        padding: 4mm !important;
+        font-size: 8pt !important;
+    }
+
+    .company-name {
+        font-size: 11pt !important;
+        margin: 0 !important;
+        padding: 2px 0 !important;
+        text-align: center;
+    }
+
+    .header-text {
+        font-size: 7pt !important;
+        padding: 1px 0 !important;
+        margin: 0 !important;
+    }
+
+    .payslip-table {
+        margin-bottom: 4px !important;
+    }
+
+    .payslip-table th,
+    .payslip-table td {
+        padding: 2px 4px !important;
+        font-size: 8pt !important;
+    }
+
+    .payslip-table {
+        page-break-inside: avoid !important;
+    }
+
+    .net-row {
+        font-size: 9pt !important;
+    }
+
+    .footer-text {
+        font-size: 6pt !important;
+        margin-top: 4px !important;
+        padding-top: 4px !important;
+    }
+
+    .payslip-logo-wrap {
+        margin-bottom: 6px !important;
+    }
+
+    .payslip-logo {
+        width: 78px !important;
+        height: auto !important;
+        max-width: 78px !important;
+        max-height: 78px !important;
+    }
+}
+
+.payslip-container {
+    background: white;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+}
+
+.payslip-logo-wrap {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.payslip-logo {
+    width: 120px;
+    height: auto;
+    max-height: 120px;
+    max-width: 120px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.payslip-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid black;
+    margin-bottom: 10px;
+}
+
+.payslip-table th,
+.payslip-table td {
+    border: 1px solid black;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.payslip-table th {
+    background: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.label-cell {
+    font-weight: bold;
+    width: 180px;
+    background: #f5f5f5;
+}
+
+.value-cell {
+    background: white;
+}
+
+.section-header {
+    background: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+}
+
+.amount-right {
+    text-align: right;
+    font-family: "Courier New", monospace;
+}
+
+.total-row {
+    font-weight: bold;
+    background: #f0f0f0;
+}
+
+.net-row {
+    font-weight: bold;
+    font-size: 12pt;
+    background: #e8e8e8;
+}
+
+.header-text {
+    text-align: center;
+    margin: 0;
+    padding: 5px 0;
+}
+
+.company-name {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 0;
+}
+
+.footer-text {
+    text-align: center;
+    font-size: 9pt;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid black;
+}

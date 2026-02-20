@@ -1,0 +1,30 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Delete User - NAS Payslip System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Delete User Account</h5>
+            </div>
+            <div class="card-body text-center">
+                <i class="bi bi-person-x text-danger" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">Are you sure?</h4>
+                <p>You are about to delete the account for <strong>{{ user_obj.username }}</strong>.</p>
+                <p class="text-muted">This action will remove system access for this person but will not delete their
+                    employee record.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mt-4">
+                        <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
