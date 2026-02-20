@@ -16,12 +16,12 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Username / Staff ID</label>
-                            <input type="text" class="form-control bg-light" value="{{ user.username }}" readonly>
+                            <label class="form-label" for="profile_username">Username / Staff ID</label>
+                            <input type="text" id="profile_username" class="form-control bg-light" value="{{ user.username }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Role</label>
-                            <input type="text" class="form-control bg-light" value="{{ user.get_role_display }}"
+                            <label class="form-label" for="profile_role">Role</label>
+                            <input type="text" id="profile_role" class="form-control bg-light" value="{{ user.get_role_display }}"
                                 readonly>
                         </div>
                     </div>

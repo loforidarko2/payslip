@@ -3,24 +3,20 @@ Management command to create sample users and data for testing.
 """
 from decimal import Decimal
 
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from accounts.models import CustomUser
 from payroll.models import Payslip
 from payroll.utils import calculate_income_tax, calculate_ssnit, calculate_tier2
 from staff.models import Employee
+from .password_utils import resolve_default_password
 
 
 class Command(BaseCommand):
     help = "Creates sample users and employee data for testing"
 
     def handle(self, *args, **kwargs):
-        default_password = settings.DEFAULT_USER_PASSWORD
-        if not default_password:
-            raise CommandError(
-                "DEFAULT_USER_PASSWORD is not set. Add it to your environment or .env file."
-            )
+        default_password = resolve_default_password()
 
         self.stdout.write("Creating sample data...")
 

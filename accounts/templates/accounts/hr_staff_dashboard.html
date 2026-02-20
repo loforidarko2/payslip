@@ -1,23 +1,6 @@
 {% extends 'accounts/base.html' %}
 
 {% block title %}HR Staff Dashboard - National Ambulance Service{% endblock %}
-{% block extra_css %}
-<style>
-    .action-btn-equal {
-        min-width: 112px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.35rem;
-    }
-    .clickable-row {
-        cursor: pointer;
-    }
-    .clickable-row:hover {
-        background-color: #f8fbff;
-    }
-</style>
-{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -56,7 +39,7 @@
                         </thead>
                         <tbody>
                             {% for payslip in recent_generated %}
-                            <tr class="clickable-row" data-href="{% url 'payroll:payslip_view' payslip.id %}" role="link" tabindex="0">
+                            <tr>
                                 <td>{{ payslip.employee.name }}</td>
                                 <td>{{ payslip.month_year }}</td>
                                 <td>GHS {{ payslip.net_salary }}</td>
@@ -71,6 +54,10 @@
                                 </td>
                                 <td>{{ payslip.generated_at|date:"M d, Y H:i" }}</td>
                                 <td>
+                                    <a href="{% url 'payroll:payslip_view' payslip.id %}"
+                                        class="btn btn-sm btn-outline-secondary action-btn-equal">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
                                     {% if payslip.approval_status == 'pending' %}
                                     <a href="{% url 'payroll:payslip_edit' payslip.id %}"
                                         class="btn btn-sm btn-warning text-white action-btn-equal">
@@ -95,29 +82,4 @@
 </div>
 
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    (function () {
-        const rows = document.querySelectorAll('.clickable-row');
-        rows.forEach((row) => {
-            const go = () => {
-                const href = row.getAttribute('data-href');
-                if (href) window.location.href = href;
-            };
-            row.addEventListener('click', (e) => {
-                if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                go();
-            });
-            row.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                    e.preventDefault();
-                    go();
-                }
-            });
-        });
-    })();
-</script>
 {% endblock %}

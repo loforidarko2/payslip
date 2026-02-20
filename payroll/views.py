@@ -13,11 +13,10 @@ import os
 from .models import Payslip, PayslipAudit, SystemConfiguration
 from .forms import PayslipGenerateForm, BulkPayslipGenerateForm, SystemConfigurationForm
 from .utils import calculate_ssnit, calculate_tier2, calculate_income_tax, generate_payslip_pdf
+from payslip.date_utils import parse_month_year, build_month_year_filters
 
 from staff.models import Employee
 from accounts.decorators import admin_required, finance_required, staff_or_admin_required
-
-MONTH_YEAR_FORMAT = '%b-%Y'
 
 
 def _resolved_snapshot(payslip):
@@ -216,27 +215,9 @@ def payslip_approve_list(request):
         pending_payslips = pending_payslips.filter(month_year__endswith=selected_year)
         all_payslips = all_payslips.filter(month_year__endswith=selected_year)
 
-    def parse_month_year(value):
-        try:
-            return datetime.strptime(value, MONTH_YEAR_FORMAT)
-        except (TypeError, ValueError):
-            return None
-
-    available_periods = set()
-    for period in Payslip.objects.values_list('month_year', flat=True).distinct():
-        period_dt = parse_month_year(period)
-        if period_dt:
-            available_periods.add(period_dt)
-
-    sorted_periods = sorted(available_periods, reverse=True)
-    month_options = []
-    seen_months = set()
-    for period in sorted_periods:
-        month_name = period.strftime('%b')
-        if month_name not in seen_months:
-            seen_months.add(month_name)
-            month_options.append(month_name)
-    year_options = sorted({str(period.year) for period in sorted_periods}, reverse=True)
+    _, month_options, year_options = build_month_year_filters(
+        Payslip.objects.values_list('month_year', flat=True).distinct()
+    )
     
     pending_payslips = Paginator(pending_payslips.order_by('-generated_at'), 15).get_page(request.GET.get('pending_page'))
     all_payslips = Paginator(all_payslips.order_by('-generated_at'), 15).get_page(request.GET.get('recent_page'))
@@ -378,27 +359,9 @@ def payslip_view(request, payslip_id):
         else:
             messages.info(request, "No payslip found for the selected filter.")
 
-    def parse_month_year(value):
-        try:
-            return datetime.strptime(value, MONTH_YEAR_FORMAT)
-        except (TypeError, ValueError):
-            return None
-
-    periods = []
-    for period in accessible_qs.values_list('month_year', flat=True).distinct():
-        period_dt = parse_month_year(period)
-        if period_dt:
-            periods.append(period_dt)
-    periods = sorted(set(periods), reverse=True)
-
-    month_options = []
-    seen_months = set()
-    for period in periods:
-        month_name = period.strftime('%b')
-        if month_name not in seen_months:
-            seen_months.add(month_name)
-            month_options.append(month_name)
-    year_options = sorted({str(period.year) for period in periods}, reverse=True)
+    periods, month_options, year_options = build_month_year_filters(
+        accessible_qs.values_list('month_year', flat=True).distinct()
+    )
 
     employee_options = accessible_qs.values('employee__staff_id', 'employee__name').distinct().order_by('employee__name')
     if not selected_employee:

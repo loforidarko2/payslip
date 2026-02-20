@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from django.db import IntegrityError
 from staff.models import Employee
+from .password_utils import resolve_default_password
 
 User = get_user_model()
 
@@ -10,9 +10,7 @@ class Command(BaseCommand):
     help = 'Creates user accounts for all employees who do not have one'
 
     def handle(self, *args, **options):
-        default_password = settings.DEFAULT_USER_PASSWORD
-        if not default_password:
-            raise CommandError("DEFAULT_USER_PASSWORD is not set. Add it to your environment or .env file.")
+        default_password = resolve_default_password()
 
         employees = Employee.objects.all()
         created_count = 0
@@ -29,7 +27,7 @@ class Command(BaseCommand):
             # Create new staff user
             try:
                 # Username = Staff ID
-                user = User.objects.create_user(
+                User.objects.create_user(
                     username=emp.staff_id,
                     email=f"{emp.staff_id.lower()}@nas.gov.gh",  # Dummy email
                     password=default_password,

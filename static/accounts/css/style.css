@@ -127,6 +127,14 @@ h2 {
     border-color: #229954;
 }
 
+.action-btn-equal {
+    min-width: 112px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
 .badge-pending {
     background-color: var(--warning-amber);
     color: white;

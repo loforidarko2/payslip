@@ -12,8 +12,8 @@ from .forms import CustomUserCreationForm, StaffIdPasswordResetForm
 from staff.models import Employee
 from payroll.models import Payslip
 from .decorators import admin_required, hr_admin_required, finance_required
+from payslip.date_utils import MONTH_YEAR_FORMAT, parse_month_year, build_month_year_filters
 
-MONTH_YEAR_FORMAT = '%b-%Y'
 USER_LIST_URL_NAME = 'accounts:user_list'
 
 
@@ -160,27 +160,9 @@ def hr_admin_dashboard(request):
             Q(month_year__icontains=search_query)
         )
 
-    def parse_month_year(value):
-        try:
-            return datetime.strptime(value, MONTH_YEAR_FORMAT)
-        except (TypeError, ValueError):
-            return None
-
-    available_periods = []
-    for period in Payslip.objects.filter(approval_status='approved').values_list('month_year', flat=True).distinct():
-        period_dt = parse_month_year(period)
-        if period_dt:
-            available_periods.append(period_dt)
-    available_periods = sorted(set(available_periods), reverse=True)
-
-    month_options = []
-    seen_months = set()
-    for dt in available_periods:
-        month_name = dt.strftime('%b')
-        if month_name not in seen_months:
-            seen_months.add(month_name)
-            month_options.append(month_name)
-    year_options = sorted({str(dt.year) for dt in available_periods}, reverse=True)
+    available_periods, month_options, year_options = build_month_year_filters(
+        Payslip.objects.filter(approval_status='approved').values_list('month_year', flat=True).distinct()
+    )
     employee_options = Employee.objects.filter(
         payslips__approval_status='approved'
     ).distinct().order_by('name')
@@ -217,26 +199,9 @@ def finance_dashboard(request):
     if selected_year:
         recent_generated_qs = recent_generated_qs.filter(month_year__endswith=selected_year)
 
-    def parse_month_year(value):
-        try:
-            return datetime.strptime(value, MONTH_YEAR_FORMAT)
-        except (TypeError, ValueError):
-            return None
-
-    available_periods = set()
-    for period in Payslip.objects.values_list('month_year', flat=True).distinct():
-        period_dt = parse_month_year(period)
-        if period_dt:
-            available_periods.add(period_dt)
-    sorted_periods = sorted(available_periods, reverse=True)
-    month_options = []
-    seen_months = set()
-    for period in sorted_periods:
-        month_name = period.strftime('%b')
-        if month_name not in seen_months:
-            seen_months.add(month_name)
-            month_options.append(month_name)
-    year_options = sorted({str(period.year) for period in sorted_periods}, reverse=True)
+    sorted_periods, month_options, year_options = build_month_year_filters(
+        Payslip.objects.values_list('month_year', flat=True).distinct()
+    )
     employee_options = Employee.objects.filter(payslips__isnull=False).distinct().order_by('name')
 
     recent_generated_qs = recent_generated_qs.order_by('-generated_at')
@@ -274,33 +239,15 @@ def staff_dashboard(request):
     month_options = []
     year_options = []
 
-    def parse_month_year(value):
-        try:
-            return datetime.strptime(value, MONTH_YEAR_FORMAT)
-        except (TypeError, ValueError):
-            return None
-
     # Try to find employee record linked to user
     try:
         if request.user.staff_id:
             employee = Employee.objects.get(staff_id=request.user.staff_id)
             payslips_qs = Payslip.objects.filter(employee=employee, approval_status='approved')
 
-            available_periods = []
-            for period in payslips_qs.values_list('month_year', flat=True).distinct():
-                period_dt = parse_month_year(period)
-                if period_dt:
-                    available_periods.append(period_dt)
-
-            available_periods = sorted(set(available_periods), reverse=True)
-            month_options = []
-            seen_months = set()
-            for dt in available_periods:
-                month_name = dt.strftime('%b')
-                if month_name not in seen_months:
-                    seen_months.add(month_name)
-                    month_options.append(month_name)
-            year_options = sorted({str(dt.year) for dt in available_periods}, reverse=True)
+            available_periods, month_options, year_options = build_month_year_filters(
+                payslips_qs.values_list('month_year', flat=True).distinct()
+            )
 
             # Keep current month/year visible in filters even when no current payslip exists yet.
             if current_month not in month_options:

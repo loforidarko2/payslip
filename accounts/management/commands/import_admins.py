@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.conf import settings
 from accounts.models import CustomUser
 from staff.models import Employee
+from .password_utils import resolve_default_password
 
 HR_DEPARTMENT = 'HR DPT.'
 
@@ -11,9 +11,7 @@ class Command(BaseCommand):
     help = 'Import specific HR-Admin users from provided list'
 
     def handle(self, *args, **options):
-        default_password = settings.DEFAULT_USER_PASSWORD
-        if not default_password:
-            raise CommandError("DEFAULT_USER_PASSWORD is not set. Add it to your environment or .env file.")
+        default_password = resolve_default_password()
 
         admins_data = [
             {'staff_id': '1287339', 'role': 'hr_admin', 'contact': '262718659', 'email': 'anumasiedu@gmail.com', 'name': 'Anum Asiedu', 'dept': HR_DEPARTMENT, 'station': 'HEADQUARTERS', 'gender': 'MALE'},
@@ -31,7 +29,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             for data in admins_data:
                 # Create/Update Employee
-                employee, created = Employee.objects.update_or_create(
+                _, _ = Employee.objects.update_or_create(
                     staff_id=data['staff_id'],
                     defaults={
                         'name': data['name'],

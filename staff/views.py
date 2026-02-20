@@ -182,7 +182,7 @@ def import_employees(request):
                         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
                         
                         # Create/Update Employee
-                        employee, created = Employee.objects.update_or_create(
+                        employee, _ = Employee.objects.update_or_create(
                             staff_id=staff_id,
                             defaults={
                                 'name': full_name,

@@ -1,16 +1,6 @@
 {% extends 'accounts/base.html' %}
 
 {% block title %}Employees - NAS Payslip System{% endblock %}
-{% block extra_css %}
-<style>
-    .clickable-row {
-        cursor: pointer;
-    }
-    .clickable-row:hover {
-        background-color: #f8fbff;
-    }
-</style>
-{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -51,18 +41,12 @@
                             <th>Department</th>
                             <th>Salary</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                 </thead>
                 <tbody>
                     {% for employee in employees %}
-                    <tr
-                        {% if can_edit_employee %}
-                        class="clickable-row"
-                        data-href="{% url 'staff:employee_edit' employee.staff_id %}"
-                        role="link"
-                        tabindex="0"
-                        {% endif %}
-                    >
+                    <tr>
                         <td>{{ employee.staff_id }}</td>
                         <td>{{ employee.name }}</td>
                         <td>{{ employee.get_status_display }}</td>
@@ -75,10 +59,18 @@
                             <span class="badge bg-secondary">Inactive</span>
                             {% endif %}
                         </td>
+                        <td>
+                            {% if can_edit_employee %}
+                            <a href="{% url 'staff:employee_edit' employee.staff_id %}"
+                                class="btn btn-sm btn-outline-secondary action-btn-equal">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-4">No employees found.</td>
+                        <td colspan="7" class="text-center py-4">No employees found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -111,29 +103,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    (function () {
-        const rows = document.querySelectorAll('.clickable-row');
-        rows.forEach((row) => {
-            const go = () => {
-                const href = row.getAttribute('data-href');
-                if (href) window.location.href = href;
-            };
-            row.addEventListener('click', (e) => {
-                if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                go();
-            });
-            row.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                    e.preventDefault();
-                    go();
-                }
-            });
-        });
-    })();
-</script>
 {% endblock %}

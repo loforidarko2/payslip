@@ -3,12 +3,6 @@
 {% block title %}HR Admin Dashboard - National Ambulance Service{% endblock %}
 {% block extra_css %}
 <style>
-    .clickable-row {
-        cursor: pointer;
-    }
-    .clickable-row:hover {
-        background-color: #f8fbff;
-    }
 </style>
 {% endblock %}
 
@@ -92,7 +86,7 @@
                         </thead>
                         <tbody>
                             {% for payslip in recent_approved %}
-                            <tr class="clickable-row" data-href="{% url 'payroll:payslip_view' payslip.id %}" role="link" tabindex="0">
+                            <tr>
                                 <td>{{ payslip.employee.name }}</td>
                                 <td>{{ payslip.employee.staff_id }}</td>
                                 <td>{{ payslip.month_year }}</td>
@@ -113,7 +107,9 @@
                                 </td>
                                 <td>{{ payslip.approved_at|date:"M d, Y H:i"|default:"-" }}</td>
                                 <td>
-                                    <span class="text-muted small">Click row to view</span>
+                                    <a href="{% url 'payroll:payslip_view' payslip.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -158,29 +154,4 @@
 </div>
 
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    (function () {
-        const rows = document.querySelectorAll('.clickable-row');
-        rows.forEach((row) => {
-            const go = () => {
-                const href = row.getAttribute('data-href');
-                if (href) window.location.href = href;
-            };
-            row.addEventListener('click', (e) => {
-                if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                go();
-            });
-            row.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    if (e.target.closest('a,button,input,select,textarea,form,label')) return;
-                    e.preventDefault();
-                    go();
-                }
-            });
-        });
-    })();
-</script>
 {% endblock %}
