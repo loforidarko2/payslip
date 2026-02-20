@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.conf import settings
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.core.files.storage import FileSystemStorage
@@ -128,6 +129,12 @@ def import_employees(request):
                 
                 # Normalize headers for robustness (only strip whitespace)
                 df.columns = [c.strip() for c in df.columns]
+                default_user_password = settings.DEFAULT_USER_PASSWORD or None
+                if default_user_password is None:
+                    messages.warning(
+                        request,
+                        "DEFAULT_USER_PASSWORD is not set. New users will be created with unusable passwords.",
+                    )
                 
                 def get_row_value(row, possibilities):
                     """Helper to get value from row checking multiple possible header names"""
@@ -204,7 +211,7 @@ def import_employees(request):
                             if not user_obj:
                                 CustomUser.objects.create_user(
                                     username=staff_id,
-                                    password='1234',
+                                    password=default_user_password,
                                     **user_defaults
                                 )
                             else:

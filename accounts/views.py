@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm
 from django.contrib import messages
+from django.conf import settings
 from django.db.models import Q
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -15,7 +16,7 @@ from .decorators import admin_required, hr_admin_required, finance_required
 def login_view(request):
     """Custom login view"""
     if request.user.is_authenticated:
-        return redirect('accounts:dashboard')
+        return redirect(settings.LOGIN_REDIRECT_URL)
         
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -24,7 +25,7 @@ def login_view(request):
             login(request, user)
             # Check if user has a staff profile linked and sync details if needed
             # (Synchronization logic could go here)
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
         else:
             messages.error(request, "Invalid username/staff ID or password.")
     else:

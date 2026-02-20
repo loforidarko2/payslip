@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.conf import settings
 from accounts.models import CustomUser
 from staff.models import Employee
 
@@ -7,6 +8,10 @@ class Command(BaseCommand):
     help = 'Import specific HR-Admin users from provided list'
 
     def handle(self, *args, **options):
+        default_password = settings.DEFAULT_USER_PASSWORD
+        if not default_password:
+            raise CommandError("DEFAULT_USER_PASSWORD is not set. Add it to your environment or .env file.")
+
         admins_data = [
             {'staff_id': '1287339', 'role': 'hr_admin', 'contact': '262718659', 'email': 'anumasiedu@gmail.com', 'name': 'Anum Asiedu', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'MALE'},
             {'staff_id': '839016', 'role': 'hr_admin', 'contact': '242604184', 'email': '', 'name': 'Wilson Laudina', 'dept': 'HR DPT.', 'station': 'HEADQUARTERS', 'gender': 'FEMALE'},
@@ -52,7 +57,7 @@ class Command(BaseCommand):
                     }
                 )
                 if u_created:
-                    user.set_password('1234')
+                    user.set_password(default_password)
                     user.save()
 
                 action = "Created" if u_created else "Updated"

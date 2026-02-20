@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.conf import settings
 
 from accounts.models import CustomUser
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--default-password",
-            default="1234",
+            default="",
             help="Default password for newly created users",
         )
 
@@ -40,6 +41,12 @@ class Command(BaseCommand):
         return "finance" in blob
 
     def handle(self, *args, **options):
+        default_password = options["default_password"] or settings.DEFAULT_USER_PASSWORD
+        if not default_password:
+            raise CommandError(
+                "No default password provided. Set DEFAULT_USER_PASSWORD or pass --default-password."
+            )
+
         csv_path = Path(options["file"])
         if not csv_path.exists():
             raise CommandError(f"CSV file not found: {csv_path}")
@@ -94,7 +101,7 @@ class Command(BaseCommand):
                     if user is None:
                         CustomUser.objects.create_user(
                             username=staff_id,
-                            password=options["default_password"],
+                            password=default_password,
                             **user_defaults,
                         )
                         created += 1

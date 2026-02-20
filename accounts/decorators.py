@@ -4,6 +4,7 @@ Custom decorators for role-based access control
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.conf import settings
 from functools import wraps
 
 def admin_required(view_func):
@@ -15,7 +16,7 @@ def admin_required(view_func):
             return view_func(request, *args, **kwargs)
         else:
             messages.error(request, "Access denied. Admin permission required.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
     return wrapper
 
 
@@ -35,7 +36,7 @@ def hr_admin_required(view_func=None, allow_admin=True):
                 if is_admin and not allow_admin:
                     msg = "Access denied. Admins cannot perform this action."
                 messages.error(request, msg)
-                return redirect('accounts:dashboard')
+                return redirect(settings.LOGIN_REDIRECT_URL)
         return wrapper
     
     if view_func:
@@ -64,7 +65,7 @@ def finance_required(view_func=None, allow_admin=True):
                 if is_admin and not allow_admin:
                     msg = "Access denied. Admins cannot perform this action."
                 messages.error(request, msg)
-                return redirect('accounts:dashboard')
+                return redirect(settings.LOGIN_REDIRECT_URL)
         return wrapper
     
     if view_func:
@@ -81,7 +82,7 @@ def hr_required(view_func):
             return view_func(request, *args, **kwargs)
         else:
             messages.error(request, "Access denied. Privileged role required.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
     return wrapper
 
 
@@ -93,7 +94,7 @@ def employee_record_access_required(view_func):
         if request.user.is_admin() or request.user.is_hr_admin() or request.user.is_finance():
             return view_func(request, *args, **kwargs)
         messages.error(request, "Access denied. Employee records permission required.")
-        return redirect('accounts:dashboard')
+        return redirect(settings.LOGIN_REDIRECT_URL)
     return wrapper
 
 

@@ -98,7 +98,7 @@ def payslip_generate(request):
                 )
                 
                 messages.success(request, f'Payslip generated successfully for {employee.name}')
-                return redirect('accounts:dashboard')
+                return redirect(settings.LOGIN_REDIRECT_URL)
             except Exception as e:
                 messages.error(request, f'Error generating payslip: {str(e)}')
     else:
@@ -188,7 +188,7 @@ def payslip_bulk_generate(request):
             if skipped_count > 0:
                 messages.warning(request, f'Skipped {skipped_count} employees (payslips already exist).')
                 
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = BulkPayslipGenerateForm()
     
@@ -341,10 +341,10 @@ def payslip_view(request, payslip_id):
         # Regular staff can only view own
         if payslip.employee.staff_id != request.user.staff_id:
             messages.error(request, "You can only view your own payslips.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
         if payslip.approval_status != 'approved':
             messages.info(request, "This payslip is currently pending review and is not available.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
 
     if request.user.is_admin() or request.user.is_finance() or request.user.is_hr_admin():
         accessible_qs = Payslip.objects.select_related('employee')
@@ -430,10 +430,10 @@ def payslip_preview_pdf(request, payslip_id):
     if not request.user.is_admin() and not request.user.is_finance() and not request.user.is_hr_admin():
          if payslip.employee.staff_id != request.user.staff_id:
             messages.error(request, "Access denied.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
          if payslip.approval_status != 'approved':
             messages.error(request, "Access denied.")
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
             
     try:
         filepath, filename = generate_payslip_pdf(payslip)
@@ -452,9 +452,9 @@ def payslip_download_pdf(request, payslip_id):
     # Same permissions check...
     if not request.user.is_admin() and not request.user.is_finance() and not request.user.is_hr_admin():
          if payslip.employee.staff_id != request.user.staff_id:
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
          if payslip.approval_status != 'approved':
-            return redirect('accounts:dashboard')
+            return redirect(settings.LOGIN_REDIRECT_URL)
 
     try:
         filepath, filename = generate_payslip_pdf(payslip)

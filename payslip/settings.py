@@ -154,6 +154,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'accounts:dashboard'
 LOGOUT_REDIRECT_URL = 'accounts:login'
+DEFAULT_USER_PASSWORD = config('DEFAULT_USER_PASSWORD', default='')
 
 # Session timeout (30 minutes of inactivity)
 SESSION_COOKIE_AGE = 1800
